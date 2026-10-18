@@ -61,23 +61,23 @@ body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Lora", Geo
   pointer-events: none;
 }
 
-.top-ornament { display: flex; align-items: center; justify-content: center; gap: 0.7rem; color: var(--gold); font-size: 1.1rem; animation: fade-down 1s ease-out 0.4s both; }
+.top-ornament { position: relative; display: flex; align-items: center; justify-content: center; gap: 0.7rem; color: var(--gold); font-size: 1.1rem; animation: fade-down 1s ease-out 0.4s both; }
 .top-ornament .lotus { display: inline-block; color: var(--vermilion); font-size: 2rem; line-height: 1; text-shadow: 0 1px rgba(255, 255, 255, 0.6); animation: lotus-bloom 5s ease-in-out infinite; }
-.eyebrow { margin: 0.7rem 0 1rem; color: #a35a37; font-size: clamp(0.62rem, 0.95vw, 0.8rem); letter-spacing: 0.19em; text-transform: uppercase; animation: fade-down 1s ease-out 0.6s both; }
+.eyebrow { margin: 0.7rem 0 1rem; color: transparent; background: linear-gradient(90deg, #a35a37 0%, #a35a37 38%, #e9b862 50%, #a35a37 62%, #a35a37 100%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; font-size: clamp(0.62rem, 0.95vw, 0.8rem); letter-spacing: 0.19em; text-transform: uppercase; animation: fade-down 1s ease-out 0.6s both, text-shine 5s linear 1.6s infinite; }
 .typed-message { position: relative; min-height: 220px; }
 .typed-line { margin: 0; min-height: 1.4em; }
 .typed-line .typed-text { white-space: pre-wrap; overflow-wrap: anywhere; }
 .salutation { margin-bottom: 0.35rem; color: var(--deep-red); font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(2rem, 3.3vw, 3.3rem); font-weight: 700; line-height: 1.05; }
 .divider-line { margin: 0.2rem 0 0.8rem; color: #be6d38; font-size: 1.3rem; letter-spacing: 0.15em; }
 .blessing { margin: 0.32rem auto; max-width: 33em; font-size: clamp(1rem, 1.5vw, 1.32rem); line-height: 1.65; }
-.signoff { margin-top: 1.15rem; color: var(--vermilion); font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(1.65rem, 2.55vw, 2.4rem); font-weight: 700; line-height: 1.08; }
+.signoff { position: relative; margin-top: 1.15rem; color: var(--vermilion); font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(1.65rem, 2.55vw, 2.4rem); font-weight: 700; line-height: 1.08; }
 .cursor { display: inline-block; width: 1px; height: 0.95em; margin-left: 2px; vertical-align: -0.06em; background: currentColor; animation: blink 0.8s steps(1) infinite; }
 .cursor.hidden { display: none; }
 
-.corner-flower { position: absolute; z-index: 1; color: rgba(157, 43, 32, 0.63); pointer-events: none; animation: gentle-float 5s ease-in-out infinite; }
+.corner-flower { position: absolute; z-index: 1; color: rgba(157, 43, 32, 0.63); pointer-events: none; animation: gentle-float 5s ease-in-out infinite, flower-bloom 1.4s ease-out 0.8s both; }
 .flower-one { top: 8%; right: 49%; font-size: clamp(1rem, 2vw, 2rem); }
-.flower-two { bottom: 13%; right: 45%; font-size: clamp(1.5rem, 2.4vw, 2.6rem); animation-delay: -2s; }
-.flower-three { top: 18%; right: 4%; color: rgba(190, 121, 52, 0.7); font-size: clamp(1.1rem, 1.8vw, 2rem); animation-delay: -3.5s; }
+.flower-two { bottom: 13%; right: 45%; font-size: clamp(1.5rem, 2.4vw, 2.6rem); animation-delay: -2s, 1.1s; }
+.flower-three { top: 18%; right: 4%; color: rgba(190, 121, 52, 0.7); font-size: clamp(1.1rem, 1.8vw, 2rem); animation-delay: -3.5s, 1.4s; }
 
 .petal-layer { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
 .petal { position: absolute; top: -12vh; display: block; opacity: 0; color: var(--petal-color, #be4228); font-family: Georgia, serif; line-height: 1; text-shadow: 0 1px 2px rgba(120, 43, 23, 0.12); animation: petal-fall var(--duration, 12s) linear var(--delay, 0s) infinite; will-change: transform; }
@@ -133,9 +133,58 @@ body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Lora", Geo
   .flower-three { top: 29%; right: 77%; }
 }
 
+/* Twinkling stars either side of the lotus */
+.top-ornament::before,
+.top-ornament::after {
+  content: "✦";
+  position: absolute;
+  top: -0.45rem;
+  font-size: 0.62rem;
+  color: var(--gold);
+  pointer-events: none;
+  animation: twinkle 2.8s ease-in-out infinite;
+}
+.top-ornament::before { left: calc(50% - 6.4rem); }
+.top-ornament::after { left: calc(50% + 5.8rem); animation-delay: -1.4s; }
+
+/* After the greeting is typed: a golden line draws under the sign-off, which then glows */
+.signoff::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.45rem;
+  width: 84px;
+  height: 1px;
+  margin-left: -42px;
+  background: linear-gradient(90deg, transparent, #c98a3e, transparent);
+  transform: scaleX(0);
+  opacity: 0;
+}
+#typedMessage.is-done .signoff::after { animation: draw-line 1.4s ease-out 0.2s forwards; }
+#typedMessage.is-done .signoff { animation: signoff-glow 4s ease-in-out 0.4s infinite; }
+
+/* Burst particles, used for taps and for the finish */
+.burst { position: absolute; left: 0; top: 0; line-height: 1; opacity: 0; pointer-events: none; animation: burst 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+.spark-burst { width: 5px; height: 5px; border-radius: 50%; background: #ffe0a0; box-shadow: 0 0 8px 2px rgba(255, 196, 96, 0.75); }
+.flower-burst { font-family: Georgia, serif; text-shadow: 0 1px 2px rgba(120, 43, 23, 0.15); }
+
+@keyframes text-shine { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes flower-bloom { from { opacity: 0; scale: 0.3; } to { opacity: 1; scale: 1; } }
+@keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.7) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(45deg); } }
+@keyframes draw-line { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes signoff-glow {
+  0%, 100% { text-shadow: 0 0 18px rgba(255, 246, 225, 0.95), 0 0 4px rgba(255, 246, 225, 0.8), 0 0 0 rgba(230, 166, 70, 0); }
+  50% { text-shadow: 0 0 22px rgba(255, 246, 225, 0.95), 0 0 14px rgba(230, 166, 70, 0.55), 0 0 4px rgba(255, 246, 225, 0.8); }
+}
+@keyframes burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(0deg); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) scale(1) rotate(var(--rot, 0deg)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
-  .petal, .spark { display: none; }
+  .petal, .spark, .burst { display: none; }
 }
 
 /* Greeting visibility fix */
