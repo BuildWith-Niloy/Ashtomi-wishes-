@@ -16,7 +16,7 @@ body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Lora", Geo
   isolation: isolate;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   min-height: 100vh;
   min-height: 100svh;
   padding: clamp(1rem, 4vw, 4rem) clamp(1rem, 5.5vw, 6rem);
@@ -36,19 +36,29 @@ body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Lora", Geo
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 35% 42%, rgba(255, 214, 128, 0.42), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 214, 128, 0.42), transparent 60%);
   animation: sunlight 7s ease-in-out infinite;
 }
 
 .wish-card {
   position: relative;
   z-index: 2;
-  width: min(40%, 520px);
-  margin-right: clamp(0rem, 2vw, 2rem);
+  width: min(64%, 680px);
   padding: 0;
-  text-align: right;
-  text-shadow: 0 0 14px rgba(255, 246, 225, 0.9), 0 0 3px rgba(255, 246, 225, 0.7);
+  text-align: center;
+  text-shadow: 0 0 18px rgba(255, 246, 225, 0.95), 0 0 4px rgba(255, 246, 225, 0.8);
   animation: card-arrive 1.2s ease-out both;
+}
+
+.wish-card::before {
+  content: "";
+  position: absolute;
+  inset: -14% -8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 248, 232, 0.82), rgba(255, 248, 232, 0.55) 55%, rgba(255, 248, 232, 0));
+  filter: blur(4px);
+  pointer-events: none;
 }
 
 .top-ornament { display: flex; align-items: center; justify-content: center; gap: 0.7rem; color: var(--gold); font-size: 1.1rem; animation: fade-down 1s ease-out 0.4s both; }
@@ -98,7 +108,7 @@ body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Lora", Geo
 
 @media (max-width: 900px) {
   .greeting-page { padding: 1.5rem; background-position: 42% center; }
-  .wish-card { width: min(46%, 480px); }
+  .wish-card { width: min(70%, 560px); }
 }
 
 @media (max-width: 650px) {
