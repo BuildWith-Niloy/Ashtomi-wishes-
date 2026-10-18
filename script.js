@@ -5,13 +5,23 @@
   const params = new URLSearchParams(window.location.search);
   const recipient = (params.get("to") || "").trim() || "x";
 
-  const lineEls = Array.from(
-    document.querySelectorAll(".typed-line")
-  );
+  const typedMessage = document.getElementById("typedMessage");
+  const lineEls = Array.from(document.querySelectorAll(".typed-line"));
+  const signoffEl = document.querySelector(".signoff");
+  const petalLayer = document.getElementById("petalLayer");
 
   const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
+  const isSmall = window.innerWidth < 650;
+
+  const flowers = ["✿", "❀", "✽", "✾", "❁"];
+  const colors = [
+    "#a92e22", "#cd633b", "#d99a45",
+    "#f4dfb8", "#ba4a31", "#e5b85f"
+  ];
+
+  const pick = list => list[Math.floor(Math.random() * list.length)];
 
   // Greeting text
   function wishLines(name) {
@@ -25,6 +35,15 @@
 
   const pause = ms =>
     new Promise(resolve => setTimeout(resolve, ms));
+
+  // Runs once the greeting has finished typing
+  function onTypingDone() {
+    if (typedMessage) typedMessage.classList.add("is-done");
+    if (!signoffEl || reducedMotion) return;
+
+    const r = signoffEl.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 0, 14);
+  }
 
   async function typeWish() {
     const lines = wishLines(recipient);
@@ -49,6 +68,7 @@
         const text = line.querySelector(".typed-text");
         if (text) text.textContent = lines[i] || "";
       });
+      onTypingDone();
       return;
     }
 
@@ -78,35 +98,57 @@
         await pause(i === 1 ? 220 : 160);
       }
     }
+
+    onTypingDone();
   }
 
-  // Falling petals and rising golden sparks
-  const petalLayer = document.getElementById("petalLayer");
+  // Small burst of petals and sparks from a point on screen
+  function burst(x, y, flowerCount, sparkCount) {
+    if (!petalLayer || reducedMotion) return;
 
+    const box = petalLayer.getBoundingClientRect();
+    const originX = x - box.left;
+    const originY = y - box.top;
+
+    const spawn = isFlower => {
+      const el = document.createElement("span");
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 60 + Math.random() * 120;
+
+      el.className = isFlower ? "burst flower-burst" : "burst spark-burst";
+      el.setAttribute("aria-hidden", "true");
+      el.style.left = `${originX}px`;
+      el.style.top = `${originY}px`;
+      el.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+      el.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+      el.style.setProperty("--rot", `${-180 + Math.random() * 360}deg`);
+
+      if (isFlower) {
+        el.textContent = pick(flowers);
+        el.style.color = pick(colors);
+        el.style.fontSize = `${14 + Math.random() * 10}px`;
+      }
+
+      el.addEventListener("animationend", () => el.remove());
+      petalLayer.appendChild(el);
+    };
+
+    for (let i = 0; i < flowerCount; i++) spawn(true);
+    for (let i = 0; i < sparkCount; i++) spawn(false);
+  }
+
+  // Ambient falling petals and rising sparks
   if (petalLayer && !reducedMotion) {
-    const flowers = ["✿", "❀", "✽", "✾", "❁"];
-    const colors = [
-      "#a92e22", "#cd633b", "#d99a45",
-      "#f4dfb8", "#ba4a31", "#e5b85f"
-    ];
-
-    const isSmall = window.innerWidth < 650;
-
     for (let i = 0; i < (isSmall ? 13 : 22); i++) {
       const petal = document.createElement("span");
 
       petal.className = "petal";
       petal.setAttribute("aria-hidden", "true");
-      petal.textContent =
-        flowers[Math.floor(Math.random() * flowers.length)];
+      petal.textContent = pick(flowers);
 
       petal.style.left = `${Math.random() * 100}%`;
       petal.style.fontSize = `${13 + Math.random() * 17}px`;
-
-      petal.style.setProperty(
-        "--petal-color",
-        colors[Math.floor(Math.random() * colors.length)]
-      );
+      petal.style.setProperty("--petal-color", pick(colors));
       petal.style.setProperty("--duration", `${9 + Math.random() * 12}s`);
       petal.style.setProperty("--delay", `${-Math.random() * 18}s`);
       petal.style.setProperty("--drift", `${-80 + Math.random() * 160}px`);
@@ -130,6 +172,11 @@
       petalLayer.appendChild(spark);
     }
   }
+
+  // Tap or click anywhere to scatter petals and sparks from that spot
+  document.addEventListener("pointerdown", event => {
+    burst(event.clientX, event.clientY, 6, 8);
+  });
 
   typeWish();
 })();
