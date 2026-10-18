@@ -17,8 +17,8 @@
 
   const flowers = ["✿", "❀", "✽", "✾", "❁"];
   const colors = [
-    "#a92e22", "#cd633b", "#d99a45",
-    "#f4dfb8", "#ba4a31", "#e5b85f"
+    "#7a1d14", "#9a3a22", "#8a4a1a",
+    "#6e2a18", "#5c1a12", "#7d5216"
   ];
 
   const pick = list => list[Math.floor(Math.random() * list.length)];
